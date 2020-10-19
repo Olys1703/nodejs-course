@@ -1,6 +1,7 @@
 const boardsRepo = require('./board.memory.repository.js');
 const tasksService = require('../tasks/task.service.js');
 const Board = require('./board.model.js');
+const { NotFoundError } = require('../../helpers/error.helper.js');
 
 /**
  * Returns boards
@@ -33,7 +34,7 @@ const getBoard = async boardId => {
   const board = await boardsRepo.getOne(boardId);
 
   if (!board) {
-    return null;
+    throw new NotFoundError('Board has not found');
   }
 
   return Board.toResponse(board);

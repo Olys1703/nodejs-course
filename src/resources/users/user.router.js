@@ -8,15 +8,23 @@ const usersService = require('./user.service.js');
  */
 router
   .route('/')
-  .get(async (req, res) => {
-    const users = await usersService.getUsers();
+  .get(async (req, res, next) => {
+    try {
+      const users = await usersService.getUsers();
 
-    return res.json(users);
+      return res.json(users);
+    } catch (err) {
+      return next(err);
+    }
   })
-  .post(async (req, res) => {
-    const newUser = await usersService.createUser(req.body);
+  .post(async (req, res, next) => {
+    try {
+      const newUser = await usersService.createUser(req.body);
 
-    return res.json(newUser);
+      return res.json(newUser);
+    } catch (err) {
+      return next(err);
+    }
   });
 
 /**
@@ -26,30 +34,38 @@ router
  */
 router
   .route('/:userId')
-  .get(async (req, res) => {
-    const { userId } = req.params;
+  .get(async (req, res, next) => {
+    try {
+      const { userId } = req.params;
 
-    const user = await usersService.getUser(userId);
+      const user = await usersService.getUser(userId);
 
-    if (!user) {
-      return res.status(404).json({});
+      return res.json(user);
+    } catch (err) {
+      return next(err);
     }
-
-    return res.json(user);
   })
-  .put(async (req, res) => {
-    const { userId } = req.params;
+  .put(async (req, res, next) => {
+    try {
+      const { userId } = req.params;
 
-    const updatedUser = await usersService.updateUser(userId, req.body);
+      const updatedUser = await usersService.updateUser(userId, req.body);
 
-    return res.json(updatedUser);
+      return res.json(updatedUser);
+    } catch (err) {
+      return next(err);
+    }
   })
-  .delete(async (req, res) => {
-    const { userId } = req.params;
+  .delete(async (req, res, next) => {
+    try {
+      const { userId } = req.params;
 
-    const deletedUserId = await usersService.deleteUser(userId);
+      const deletedUserId = await usersService.deleteUser(userId);
 
-    return res.json({ id: deletedUserId });
+      return res.json({ id: deletedUserId });
+    } catch (err) {
+      return next(err);
+    }
   });
 
 module.exports = router;

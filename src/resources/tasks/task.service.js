@@ -1,5 +1,6 @@
 const tasksRepo = require('./task.memory.repository.js');
 const Task = require('./task.model.js');
+const { NotFoundError } = require('../../helpers/error.helper.js');
 
 /**
  * Returns tasks by board id
@@ -34,7 +35,7 @@ const getTask = async taskId => {
   const task = await tasksRepo.getOne(taskId);
 
   if (!task) {
-    return null;
+    throw new NotFoundError('Task has not found');
   }
 
   return Task.toResponse(task);
