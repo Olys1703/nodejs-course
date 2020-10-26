@@ -1,4 +1,4 @@
-const boardsRepo = require('./board.memory.repository.js');
+const boardsRepo = require('./board.db.repository.js');
 const tasksService = require('../tasks/task.service.js');
 const Board = require('./board.model.js');
 const { NotFoundError } = require('../../helpers/error.helper.js');
@@ -47,8 +47,11 @@ const getBoard = async boardId => {
  * @return {Promise}
  */
 const updateBoard = async (boardId, board) => {
-  const updatedBoardId = await boardsRepo.updateOne(boardId, new Board(board));
-  const updatedBoard = await boardsRepo.getOne(updatedBoardId);
+  const updatedBoard = await boardsRepo.updateOne(boardId, board);
+
+  if (!updatedBoard) {
+    throw new NotFoundError('Board has not updated because not found');
+  }
 
   return Board.toResponse(updatedBoard);
 };
@@ -59,11 +62,15 @@ const updateBoard = async (boardId, board) => {
  * @return {Promise}
  */
 const deleteBoard = async boardId => {
-  const deletedBoardId = await boardsRepo.deleteOne(boardId);
+  const deletedBoard = await boardsRepo.deleteOne(boardId);
+
+  if (!deletedBoard) {
+    throw new NotFoundError('Board has not deleted because not found');
+  }
 
   await tasksService.deleteTasksByBoardId(boardId);
 
-  return deletedBoardId;
+  return deletedBoard;
 };
 
 module.exports = { getBoards, createBoard, getBoard, updateBoard, deleteBoard };

@@ -1,4 +1,4 @@
-const usersRepo = require('./user.memory.repository.js');
+const usersRepo = require('./user.db.repository.js');
 const User = require('./user.model.js');
 const tasksService = require('../tasks/task.service.js');
 const { NotFoundError } = require('../../helpers/error.helper.js');
@@ -47,8 +47,11 @@ const getUser = async userId => {
  * @return {Promise}
  */
 const updateUser = async (userId, user) => {
-  const updatedUserId = await usersRepo.updateOne(userId, new User(user));
-  const updatedUser = await usersRepo.getOne(updatedUserId);
+  const updatedUser = await usersRepo.updateOne(userId, user);
+
+  if (!updatedUser) {
+    throw new NotFoundError('User has not updated because not found');
+  }
 
   return User.toResponse(updatedUser);
 };
@@ -59,11 +62,15 @@ const updateUser = async (userId, user) => {
  * @return {Promise}
  */
 const deleteUser = async userId => {
-  const deletedUserId = await usersRepo.deleteOne(userId);
+  const deletedUser = await usersRepo.deleteOne(userId);
 
-  await tasksService.unassignUserFromTasks(deletedUserId);
+  if (!deletedUser) {
+    throw new NotFoundError('User has not deleted because not found');
+  }
 
-  return deletedUserId;
+  await tasksService.unassignUserFromTasks(deletedUser._id);
+
+  return deletedUser;
 };
 
 module.exports = { getUsers, createUser, getUser, updateUser, deleteUser };

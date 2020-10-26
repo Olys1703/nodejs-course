@@ -1,17 +1,11 @@
 const chalk = require('chalk');
 
 const logUncaughtException = err => {
-  console.log(`${chalk.red.bold('Uncaught Exception:')} ${err} \n`);
-
-  const { exit } = process;
-  exit(1);
+  console.log(`${chalk.red.bold(`Uncaught Exception: ${err.stack}`)} \n`);
 };
 
 const logUnhandledRejection = err => {
-  console.error(`${chalk.red.bold('Uncaught Rejection:')} ${err} \n`);
-
-  const { exit } = process;
-  exit(1);
+  console.error(`${chalk.red.bold(`Uncaught Rejection: ${err.stack}`)} \n`);
 };
 
 const logValidationError = err => {
@@ -23,7 +17,7 @@ const logNotFoundError = err => {
 };
 
 const logError = err => {
-  console.error(`${chalk.red.bold('Error:')} ${err.message} \n`);
+  console.error(`${chalk.red.bold(err.stack)} \n`);
 };
 
 const logTitle = title => {
@@ -53,7 +47,7 @@ const logBody = ({ body }) => {
 const logDuration = startTimeMs => {
   const durationMs = Date.now() - startTimeMs;
 
-  console.log(` ${chalk.yellow('Duration:')} ${durationMs} ms`);
+  console.log(` ${chalk.yellow('Duration:')} ${durationMs}ms`);
 };
 
 const logStatusCode = ({ statusCode }) => {
@@ -68,8 +62,9 @@ const logRequest = req => {
   console.log('');
 };
 
-const logResponse = (res, startTimeMs) => {
+const logResponse = (req, res, startTimeMs) => {
   logTitle('Response');
+  logURL(req);
   logStatusCode(res);
   logDuration(startTimeMs);
   console.log('');

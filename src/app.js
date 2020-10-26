@@ -6,7 +6,12 @@ const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 
-const middlewares = require('./middlewares');
+const {
+  requestLoggerMiddleware,
+  rootRequestMiddleware,
+  errorLoggerMiddleware,
+  errorHandlerMiddleware
+} = require('./middlewares');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -14,16 +19,12 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 app.use(express.json());
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
-app.use(middlewares.requestLoggerMiddleware);
-app.use('/', (req, res, next) => {
-  if (req.originalUrl === '/') {
-    res.send('Service is running!');
-    return;
-  }
-  next();
-});
+app.use(requestLoggerMiddleware);
+app.use('/', rootRequestMiddleware);
 app.use('/users', userRouter);
-app.use('/boards', [boardRouter, taskRouter]);
-app.use(middlewares.errorHandlerMiddleware, middlewares.errorLoggerMiddleware);
+app.use('/boards/:boardId/tasks', taskRouter);
+app.use('/boards', boardRouter);
+app.use(errorHandlerMiddleware);
+app.use(errorLoggerMiddleware);
 
 module.exports = app;
