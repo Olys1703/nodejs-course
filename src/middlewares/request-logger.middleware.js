@@ -8,7 +8,7 @@ const requestLoggerMiddleware = (req, res, next) => {
   logRequest(req);
 
   finished(res, () => {
-    logResponse(res, startTimeMs);
+    logResponse(req, res, startTimeMs);
   });
 
   next();

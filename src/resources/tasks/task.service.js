@@ -1,4 +1,4 @@
-const tasksRepo = require('./task.memory.repository.js');
+const tasksRepo = require('./task.db.repository.js');
 const Task = require('./task.model.js');
 const { NotFoundError } = require('../../helpers/error.helper.js');
 
@@ -20,7 +20,7 @@ const getTasksByBoardId = async boardId => {
  * @return {Promise}
  */
 const createTask = async (boardId, task) => {
-  const newTaskId = await tasksRepo.createOne(new Task(boardId, task));
+  const newTaskId = await tasksRepo.createOne(new Task({ ...task, boardId }));
   const newTask = await tasksRepo.getOne(newTaskId);
 
   return Task.toResponse(newTask);
@@ -49,11 +49,11 @@ const getTask = async taskId => {
  * @return {Promise}
  */
 const updateTask = async ({ taskId, boardId }, task) => {
-  const updatedTaskId = await tasksRepo.updateOne(
-    taskId,
-    new Task(boardId, task)
-  );
-  const updatedTask = await tasksRepo.getOne(updatedTaskId);
+  const updatedTask = await tasksRepo.updateOne(taskId, { ...task, boardId });
+
+  if (!updatedTask) {
+    throw new NotFoundError('Task has not updated because not found');
+  }
 
   return Task.toResponse(updatedTask);
 };
@@ -65,11 +65,9 @@ const updateTask = async ({ taskId, boardId }, task) => {
  */
 const unassignUserFromTasks = async userId => {
   const tasks = await tasksRepo.getSome('userId', userId);
+  const tasksIds = tasks.map(task => task.id);
 
-  const tasksIds = await tasksRepo.updateSome(
-    tasks.map(task => task.id),
-    { userId: null }
-  );
+  await tasksRepo.updateSome(tasksIds, { userId: null });
 
   return tasksIds;
 };
@@ -80,9 +78,13 @@ const unassignUserFromTasks = async userId => {
  * @return {Promise}
  */
 const deleteTask = async taskId => {
-  const deletedTaskId = await tasksRepo.deleteOne(taskId);
+  const deletedTask = await tasksRepo.deleteOne(taskId);
 
-  return deletedTaskId;
+  if (!deletedTask) {
+    throw new NotFoundError('Task has not deleted because not found');
+  }
+
+  return deletedTask;
 };
 
 /**
@@ -92,12 +94,11 @@ const deleteTask = async taskId => {
  */
 const deleteTasksByBoardId = async boardId => {
   const tasks = await tasksRepo.getSome('boardId', boardId);
+  const tasksIds = tasks.map(task => task.id);
 
-  const deletedTasksIds = await tasksRepo.deleteSome(
-    tasks.map(task => task.id)
-  );
+  await tasksRepo.deleteSome(tasksIds);
 
-  return deletedTasksIds;
+  return tasksIds;
 };
 
 module.exports = {
