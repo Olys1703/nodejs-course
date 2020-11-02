@@ -1,3 +1,27 @@
+class ForbiddenError extends Error {
+  constructor(message) {
+    super(message);
+
+    Error.captureStackTrace(this, this.constructor);
+
+    this.name = 'Forbidden Error';
+    this.message = message || 'Forbidden';
+    this.status = 403;
+  }
+}
+
+class AuthError extends Error {
+  constructor(message) {
+    super(message);
+
+    Error.captureStackTrace(this, this.constructor);
+
+    this.name = 'Unauth Error';
+    this.message = message || 'Not Authorized';
+    this.status = 401;
+  }
+}
+
 class NotFoundError extends Error {
   constructor(message) {
     super(message);
@@ -24,5 +48,7 @@ class ValidationError extends Error {
 
 module.exports = {
   NotFoundError,
+  ForbiddenError,
+  AuthError,
   ValidationError
 };

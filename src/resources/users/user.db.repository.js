@@ -6,6 +6,8 @@ const createOne = async newUser => User.create(newUser);
 
 const getOne = async userId => User.findById(userId);
 
+const findOne = async data => User.findOne(data);
+
 const updateOne = async (userId, updatedUser) =>
   User.findByIdAndUpdate(userId, updatedUser);
 
@@ -15,6 +17,7 @@ module.exports = {
   getAll,
   createOne,
   getOne,
+  findOne,
   updateOne,
   deleteOne
 };

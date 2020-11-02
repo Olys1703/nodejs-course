@@ -14,7 +14,7 @@ const getUsers = async () => {
 };
 
 /**
- * Creates user
+ * Creates login
  * @param {Object} user
  * @return {Promise}
  */
@@ -26,7 +26,7 @@ const createUser = async user => {
 };
 
 /**
- * Returns user by userId
+ * Returns login by userId
  * @param {String} userId
  * @return {Promise}
  */
@@ -41,7 +41,7 @@ const getUser = async userId => {
 };
 
 /**
- * Updates user
+ * Updates login
  * @param {String} userId
  * @param {Object} user
  * @return {Promise}
@@ -57,7 +57,7 @@ const updateUser = async (userId, user) => {
 };
 
 /**
- * Deletes user and unassign him from tasks
+ * Deletes login and unassign him from tasks
  * @param {String} userId
  * @return {Promise}
  */

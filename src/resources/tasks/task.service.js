@@ -59,7 +59,7 @@ const updateTask = async ({ taskId, boardId }, task) => {
 };
 
 /**
- * Unassignes user from tasks
+ * Unassignes login from tasks
  * @param {String} userId
  * @return {Promise}
  */
