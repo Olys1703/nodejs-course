@@ -4,7 +4,7 @@ const usersService = require('./user.service.js');
 
 /**
  * Get users
- * Create user
+ * Create login
  */
 router
   .route('/')
@@ -28,9 +28,9 @@ router
   });
 
 /**
- * Get user
- * Update user
- * Delete user
+ * Get login
+ * Update login
+ * Delete login
  */
 router
   .route('/:userId')
